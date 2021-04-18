@@ -1,0 +1,14 @@
+# file
+.dockerignore
+.env.example
+.gitattributes
+.gitignore
+Makefile
+Dockerfile
+LICENSE
+README.md
+
+
+# folder
+.git/
+.vscode/

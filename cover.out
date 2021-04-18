@@ -1,0 +1,24 @@
+mode: set
+github.com/shandysiswandi/echo-service/internal/config/config.go:13.20,23.2 7 1
+github.com/shandysiswandi/echo-service/internal/util/is/inarray.go:3.52,4.34 1 1
+github.com/shandysiswandi/echo-service/internal/util/is/inarray.go:7.2,7.25 1 1
+github.com/shandysiswandi/echo-service/internal/util/is/inarray.go:14.2,14.14 1 1
+github.com/shandysiswandi/echo-service/internal/util/is/inarray.go:4.34,6.3 1 1
+github.com/shandysiswandi/echo-service/internal/util/is/inarray.go:7.25,8.23 1 1
+github.com/shandysiswandi/echo-service/internal/util/is/inarray.go:8.23,9.15 1 1
+github.com/shandysiswandi/echo-service/internal/util/is/inarray.go:9.15,11.5 1 1
+github.com/shandysiswandi/echo-service/pkg/uuid/uuid.go:11.17,13.2 1 1
+github.com/shandysiswandi/echo-service/pkg/uuid/uuid.go:15.31,17.2 1 1
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:19.60,26.2 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:28.37,30.16 2 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:34.2,34.69 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:38.2,41.12 3 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:30.16,32.3 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:34.69,36.3 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:44.29,45.23 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:49.2,49.59 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:45.23,47.3 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:49.59,50.13 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:54.45,55.40 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:59.2,59.15 1 0
+github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb/mongo.go:55.40,57.3 1 0
