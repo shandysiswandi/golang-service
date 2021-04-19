@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"time"
 
 	"github.com/shandysiswandi/echo-service/internal/config"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,33 +11,35 @@ import (
 )
 
 type MongoDB struct {
-	config  *config.Config
-	context context.Context
-	client  *mongo.Client
-	db      *mongo.Database
+	config *config.Config
+	client *mongo.Client
+	db     *mongo.Database
 }
 
-func New(cfg *config.Config, ctx context.Context) *MongoDB {
+func New(cfg *config.Config) *MongoDB {
+
 	return &MongoDB{
-		config:  cfg,
-		context: ctx,
-		client:  nil,
-		db:      nil,
+		config: cfg,
+		client: nil,
+		db:     nil,
 	}
 }
 
 func (mDB *MongoDB) Connect() error {
-	client, err := mongo.Connect(mDB.context, options.Client().ApplyURI("mongodb://localhost:27017"))
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mDB.config.Mongos[0].URI))
 	if err != nil {
 		return err
 	}
 
-	if err := client.Ping(mDB.context, readpref.Primary()); err != nil {
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return err
 	}
 
 	mDB.client = client
-	mDB.db = client.Database("echo-service")
+	mDB.db = client.Database(mDB.config.Mongos[0].DatabaseName)
 
 	return nil
 }
@@ -46,8 +49,8 @@ func (mDB *MongoDB) Close() {
 		return
 	}
 
-	if err := mDB.client.Disconnect(mDB.context); err != nil {
-		panic(err)
+	if err := mDB.client.Disconnect(context.Background()); err != nil {
+		println(err.Error())
 	}
 }
 
