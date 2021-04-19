@@ -10,6 +10,7 @@ func router(e *echo.Echo) *echo.Echo {
 	homeHandler := handler.NewHomeHandler()
 	e.GET("/", homeHandler.Home)
 	e.GET("/graceful", homeHandler.Graceful)
+	e.GET("/health", homeHandler.Health)
 
 	return e
 }

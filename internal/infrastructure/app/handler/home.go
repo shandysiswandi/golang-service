@@ -22,3 +22,7 @@ func (hh *homeHandler) Graceful(ctx echo.Context) error {
 	time.Sleep(2 * time.Second)
 	return ctx.JSON(http.StatusOK, "OK")
 }
+
+func (hh *homeHandler) Health(ctx echo.Context) error {
+	return ctx.String(http.StatusOK, "health")
+}

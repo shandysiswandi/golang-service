@@ -12,10 +12,10 @@ import (
 )
 
 func Test_NewHomeHandler_Home(t *testing.T) {
-	// Setup
-	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
+
+	e := echo.New()
 	c := e.NewContext(req, rec)
 	h := handler.NewHomeHandler()
 
@@ -33,17 +33,33 @@ func Test_NewHomeHandler_Home(t *testing.T) {
 }
 
 func Test_NewHomeHandler_Graceful(t *testing.T) {
-	// Setup
-	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/graceful", nil)
 	rec := httptest.NewRecorder()
+
+	e := echo.New()
 	c := e.NewContext(req, rec)
 	h := handler.NewHomeHandler()
+
 	expBody := "\"OK\"\n"
 
 	// Assertions
 	if assert.NoError(t, h.Graceful(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expBody, rec.Body.String())
+	}
+}
+
+func Test_NewHomeHandler_Health(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+
+	e := echo.New()
+	c := e.NewContext(req, rec)
+	h := handler.NewHomeHandler()
+
+	// Assertions
+	if assert.NoError(t, h.Health(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, "health", rec.Body.String())
 	}
 }
