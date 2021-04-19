@@ -13,6 +13,7 @@ func Injection(cfg *config.Config) *echo.Echo {
 	e.HideBanner = true
 	e.Server.ReadTimeout = 30 * time.Second
 	e.Server.WriteTimeout = 30 * time.Second
+	e.HTTPErrorHandler = httpError
 
 	e = middlewares(e)
 	e = router(e)
