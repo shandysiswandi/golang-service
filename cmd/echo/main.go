@@ -23,15 +23,14 @@ func main() {
 	}
 
 	/********** ********** ********** ********** **********/
-	/* create config instance & context
+	/* create config instance
 	/********** ********** ********** ********** **********/
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	cfg := config.New()
 
 	/********** ********** ********** ********** **********/
 	/* create mongo db & connect
 	/********** ********** ********** ********** **********/
-	mongoDB := mongodb.New(cfg, ctx)
+	mongoDB := mongodb.New(cfg)
 	if err := mongoDB.Connect(); err != nil {
 		println("error connect mongo db")
 	}
@@ -61,8 +60,9 @@ func main() {
 	/********** ********** ********** ********** **********/
 	/* defer resources
 	/********** ********** ********** ********** **********/
-	defer mongoDB.Close() // close mongo connectionx
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()        // main context background
+	defer mongoDB.Close() // close mongo connectionx
 
 	/********** ********** ********** ********** **********/
 	/* shutdown server
