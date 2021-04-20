@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/shandysiswandi/echo-service/internal/config"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
 	"github.com/shandysiswandi/echo-service/internal/util/response"
@@ -15,7 +16,8 @@ func Test_NewHomeHandler_Home(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
 
-	e := app.Injection(nil)
+	cfg := &config.Config{JWTSecret: ""}
+	e := app.Injection(cfg)
 	c := e.NewContext(req, rec)
 	h := handler.NewHomeHandler()
 
@@ -29,14 +31,14 @@ func Test_NewHomeHandler_Home(t *testing.T) {
 	assert.Equal(t, false, res.Error)
 	assert.Equal(t, "welcome home", res.Message)
 	assert.Equal(t, []interface{}{}, res.Data)
-
 }
 
 func Test_NewHomeHandler_Graceful(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/graceful", nil)
 	rec := httptest.NewRecorder()
 
-	e := app.Injection(nil)
+	cfg := &config.Config{JWTSecret: ""}
+	e := app.Injection(cfg)
 	c := e.NewContext(req, rec)
 	h := handler.NewHomeHandler()
 
@@ -52,7 +54,8 @@ func Test_NewHomeHandler_Health(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
 
-	e := app.Injection(nil)
+	cfg := &config.Config{JWTSecret: ""}
+	e := app.Injection(cfg)
 	c := e.NewContext(req, rec)
 	h := handler.NewHomeHandler()
 
