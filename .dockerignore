@@ -3,12 +3,13 @@
 .env.example
 .gitattributes
 .gitignore
-Makefile
+cover.out
 Dockerfile
 LICENSE
+Makefile
 README.md
-
 
 # folder
 .git/
 .vscode/
+.scannerwork/

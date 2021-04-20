@@ -10,7 +10,7 @@ build: clear
 run: clear
 	@docker run --restart=always -d --name $(DOCKER_CONTAINER_NAME) -p $(PORT):$(PORT) $(DOCKER_IMAGE_NAME)
 
-# 
+# development
 clear:
 	@clear
 
