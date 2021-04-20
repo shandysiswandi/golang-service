@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/shandysiswandi/echo-service/internal/config"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,7 +14,8 @@ func Test_HTTPError_MethodNotAllowed(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	rec := httptest.NewRecorder()
 
-	e := app.Injection(nil)
+	cfg := &config.Config{JWTSecret: ""}
+	e := app.Injection(cfg)
 
 	e.ServeHTTP(rec, req)
 	assert.Equal(t, http.StatusMethodNotAllowed, rec.Code)
@@ -24,9 +26,25 @@ func Test_HTTPError_NotFound(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/xxx", nil)
 	rec := httptest.NewRecorder()
 
-	e := app.Injection(nil)
+	cfg := &config.Config{JWTSecret: ""}
+	e := app.Injection(cfg)
 
 	e.ServeHTTP(rec, req)
 	assert.Equal(t, http.StatusNotFound, rec.Code)
 	assert.Equal(t, "{\"error\":true,\"message\":\"Not Found\",\"reason\":[]}\n", rec.Body.String())
+}
+
+func Test_HTTPError_Unauthorized(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/jwt", nil)
+	rec := httptest.NewRecorder()
+
+	token := "fake-jwt"
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	cfg := &config.Config{JWTSecret: ""}
+	e := app.Injection(cfg)
+
+	e.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusUnauthorized, rec.Code)
+	assert.Equal(t, "{\"error\":true,\"message\":\"Unauthorized\",\"reason\":[\"invalid or expired jwt\"]}\n", rec.Body.String())
 }
