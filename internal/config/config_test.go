@@ -18,6 +18,7 @@ func Test_New(t *testing.T) {
 	mgouri := "echo-service"
 	mgoconanme := "echo-service"
 	mgodbname := "echo-service"
+	jwtsecret := "fake-secret-jwt"
 
 	// set env variable
 	os.Setenv("HOST", host)
@@ -29,6 +30,8 @@ func Test_New(t *testing.T) {
 	os.Setenv("MONGO_URI", mgouri)
 	os.Setenv("MONGO_CONNECTION_NAME", mgoconanme)
 	os.Setenv("MONGO_DATABASE_NAME", mgodbname)
+
+	os.Setenv("JWT_SECRET", jwtsecret)
 
 	// testing & assertion
 	cfg := config.New()
@@ -42,4 +45,6 @@ func Test_New(t *testing.T) {
 	assert.Equal(t, mgouri, cfg.Mongos[0].URI)
 	assert.Equal(t, mgoconanme, cfg.Mongos[0].ConnectionName)
 	assert.Equal(t, mgodbname, cfg.Mongos[0].DatabaseName)
+
+	assert.Equal(t, jwtsecret, cfg.JWTSecret)
 }

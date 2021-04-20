@@ -3,12 +3,13 @@ package config
 import "os"
 
 type Config struct {
-	Host   string
-	Port   string
-	TZ     string
-	ENV    string
-	Image  string
-	Mongos []mongo
+	Host      string
+	Port      string
+	TZ        string
+	ENV       string
+	Image     string
+	Mongos    []mongo
+	JWTSecret string
 }
 
 type mongo struct {
@@ -25,6 +26,8 @@ func New() *Config {
 	config.TZ = os.Getenv("TZ")
 	config.ENV = os.Getenv("ENV")
 	config.Image = os.Getenv("IMAGE")
+
+	config.JWTSecret = os.Getenv("JWT_SECRET")
 
 	config.Mongos = append(config.Mongos, mongo{
 		URI:            os.Getenv("MONGO_URI"),
