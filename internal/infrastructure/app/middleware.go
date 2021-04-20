@@ -6,9 +6,11 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/shandysiswandi/echo-service/internal/config"
+	"github.com/shandysiswandi/echo-service/internal/util/is"
 )
 
-func middlewares(e *echo.Echo) *echo.Echo {
+func middlewares(e *echo.Echo, cfg *config.Config) *echo.Echo {
 	e.Pre(middleware.RemoveTrailingSlash())
 
 	e.Use(logger())
@@ -18,8 +20,22 @@ func middlewares(e *echo.Echo) *echo.Echo {
 	// e.Use(middleware.Decompress())
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 9}))
 	e.Use(cors())
+	e.Use(jwt(cfg.JWTSecret))
 
 	return e
+}
+
+func jwt(key string) echo.MiddlewareFunc {
+	jwtCfg := middleware.JWTConfig{
+		Claims:     &JWTClaim{},
+		SigningKey: []byte(key),
+		Skipper: func(c echo.Context) bool {
+			whiteList := []string{"/", "/xxx", "/graceful", "/health"}
+			path := c.Request().URL.Path
+			return is.InArrayString(whiteList, path)
+		},
+	}
+	return middleware.JWTWithConfig(jwtCfg)
 }
 
 func logger() echo.MiddlewareFunc {
