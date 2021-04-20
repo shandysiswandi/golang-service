@@ -10,6 +10,11 @@ import (
 
 type homeHandler struct{}
 
+/* Example get user jwt
+user := c.Get("user").(*jwte.Token)
+data := user.Claims.(*JWTClaim)
+*/
+
 func NewHomeHandler() *homeHandler {
 	return &homeHandler{}
 }
