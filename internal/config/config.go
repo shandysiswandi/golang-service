@@ -8,11 +8,11 @@ type Config struct {
 	TZ        string
 	ENV       string
 	Image     string
-	Mongos    []mongo
+	Mongos    []Mongo
 	JWTSecret string
 }
 
-type mongo struct {
+type Mongo struct {
 	URI            string
 	ConnectionName string
 	DatabaseName   string
@@ -29,7 +29,7 @@ func New() *Config {
 
 	config.JWTSecret = os.Getenv("JWT_SECRET")
 
-	config.Mongos = append(config.Mongos, mongo{
+	config.Mongos = append(config.Mongos, Mongo{
 		URI:            os.Getenv("MONGO_URI"),
 		ConnectionName: os.Getenv("MONGO_CONNECTION_NAME"),
 		DatabaseName:   os.Getenv("MONGO_DATABASE_NAME"),
