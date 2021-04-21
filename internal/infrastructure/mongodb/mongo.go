@@ -17,7 +17,6 @@ type MongoDB struct {
 }
 
 func New(cfg *config.Config) *MongoDB {
-
 	return &MongoDB{
 		config: cfg,
 		client: nil,
