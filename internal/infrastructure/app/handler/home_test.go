@@ -12,14 +12,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_NewHomeHandler_Home(t *testing.T) {
+func TestHome(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
 
 	cfg := &config.Config{JWTSecret: ""}
-	e := app.Injection(cfg)
+	e := app.New(cfg)
+
 	c := e.NewContext(req, rec)
-	h := handler.NewHomeHandler()
+
+	hc := handler.HandlerConfig{}
+	h := handler.New(hc)
 
 	// Assertions
 	assert.NoError(t, h.Home(c))
@@ -31,36 +34,4 @@ func Test_NewHomeHandler_Home(t *testing.T) {
 	assert.Equal(t, false, res.Error)
 	assert.Equal(t, "welcome home", res.Message)
 	assert.Equal(t, []interface{}{}, res.Data)
-}
-
-func Test_NewHomeHandler_Graceful(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/graceful", nil)
-	rec := httptest.NewRecorder()
-
-	cfg := &config.Config{JWTSecret: ""}
-	e := app.Injection(cfg)
-	c := e.NewContext(req, rec)
-	h := handler.NewHomeHandler()
-
-	expBody := "\"OK\"\n"
-
-	// Assertions
-	assert.NoError(t, h.Graceful(c))
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Equal(t, expBody, rec.Body.String())
-}
-
-func Test_NewHomeHandler_Health(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/health", nil)
-	rec := httptest.NewRecorder()
-
-	cfg := &config.Config{JWTSecret: ""}
-	e := app.Injection(cfg)
-	c := e.NewContext(req, rec)
-	h := handler.NewHomeHandler()
-
-	// Assertions
-	assert.NoError(t, h.Health(c))
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Equal(t, "health", rec.Body.String())
 }
