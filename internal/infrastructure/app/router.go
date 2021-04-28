@@ -6,11 +6,13 @@ import (
 )
 
 func router(e *echo.Echo) *echo.Echo {
-	// home
-	homeHandler := handler.NewHomeHandler()
-	e.GET("/", homeHandler.Home)
-	e.GET("/graceful", homeHandler.Graceful)
-	e.GET("/health", homeHandler.Health)
+
+	hc := handler.HandlerConfig{}
+	h := handler.New(hc)
+
+	e.GET("/", h.Home)
+	e.GET("/graceful", h.Graceful)
+	e.GET("/health", h.Health)
 
 	return e
 }
