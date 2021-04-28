@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/aws/aws-sdk-go v1.38.22 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/google/uuid v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.12.1 // indirect
@@ -20,5 +19,6 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
+	google.golang.org/protobuf v1.26.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
