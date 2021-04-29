@@ -23,7 +23,7 @@ func TestGraceful(t *testing.T) {
 	hc := handler.HandlerConfig{}
 	h := handler.New(hc)
 
-	expBody := "\"OK\"\n"
+	expBody := "OK"
 
 	// Assertions
 	assert.NoError(t, h.Graceful(c))

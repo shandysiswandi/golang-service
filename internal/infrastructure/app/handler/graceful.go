@@ -9,5 +9,5 @@ import (
 
 func (h *handler) Graceful(c echo.Context) error {
 	time.Sleep(2 * time.Second)
-	return c.JSON(http.StatusOK, "OK")
+	return c.String(http.StatusOK, "OK")
 }

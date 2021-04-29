@@ -8,7 +8,6 @@ import (
 	"github.com/shandysiswandi/echo-service/internal/config"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
-	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/response"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,14 +23,10 @@ func TestHome(t *testing.T) {
 	hc := handler.HandlerConfig{}
 	h := handler.New(hc)
 
+	expBody := "welcome home"
+
 	// Assertions
 	assert.NoError(t, h.Home(c))
-	res, err := response.SuccessForTest(rec.Body.String())
-	assert.NoError(t, err)
-	assert.NotNil(t, res)
-	//
 	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Equal(t, false, res.Error)
-	assert.Equal(t, "welcome home", res.Message)
-	assert.Equal(t, []interface{}{}, res.Data)
+	assert.Equal(t, expBody, rec.Body.String())
 }
