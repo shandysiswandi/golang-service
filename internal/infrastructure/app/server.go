@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/shandysiswandi/echo-service/internal/config"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/response"
+	"github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb"
 	"github.com/shandysiswandi/echo-service/internal/util/is"
 )
 
@@ -35,7 +36,7 @@ type (
 	}
 )
 
-func New(cfg *config.Config) *echo.Echo {
+func New(cfg *config.Config, dbm *mongodb.MongoDB) *echo.Echo {
 	e := echo.New()
 	validation := validator.New()
 
@@ -55,10 +56,10 @@ func New(cfg *config.Config) *echo.Echo {
 	// e.Use(middleware.Decompress())
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 9}))
 	e.Use(cors())
-	e.Use(jwt(cfg.JWTSecret))
+	// e.Use(jwt(cfg.JWTSecret))
 
 	// setup router
-	e = router(e, validation)
+	e = router(e, validation, dbm)
 
 	return e
 }
