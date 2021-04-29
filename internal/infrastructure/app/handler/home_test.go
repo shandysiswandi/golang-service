@@ -8,7 +8,7 @@ import (
 	"github.com/shandysiswandi/echo-service/internal/config"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
-	"github.com/shandysiswandi/echo-service/internal/util/response"
+	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/response"
 	"github.com/stretchr/testify/assert"
 )
 
