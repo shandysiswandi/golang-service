@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+import "api/protobuf/empty.proto";
+
+option go_package = "internal/infrastructure/rpc/pb";
+
+message Message {
+  string message = 1;
+}
+
+service MessageService {
+  rpc Home(pb.Empty) returns (Message) {}
+  rpc Health(pb.Empty) returns (Message) {}
+  rpc Graceful(pb.Empty) returns (Message) {}
+}
