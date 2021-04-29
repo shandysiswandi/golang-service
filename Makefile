@@ -3,7 +3,7 @@ PORT					= 40000
 DOCKER_IMAGE_NAME		= "goapp"
 DOCKER_CONTAINER_NAME	= "goapp"
 
-# command
+# command docker
 build: clear
 	@docker build --build-arg TAGGED=builder-${DOCKER_IMAGE_NAME} -f Dockerfile --tag $(DOCKER_IMAGE_NAME) .
 
@@ -29,5 +29,9 @@ cover: clear
 
 code-check: clear
 	@staticcheck ./...
+
+# gRPC
+gen-proto: clear
+	@protoc --go_out=. --go-grpc_out=. api/protobuf/**
 
 # @docker build --build-arg TAGGED=builder-${DOCKER_IMAGE_NAME} --file Dockerfile --tag $(DOCKER_IMAGE_NAME) .
