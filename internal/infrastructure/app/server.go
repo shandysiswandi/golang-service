@@ -6,6 +6,7 @@ import (
 	"time"
 
 	jwtlib "github.com/dgrijalva/jwt-go"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/shandysiswandi/echo-service/internal/config"
@@ -28,16 +29,22 @@ type (
 		Lang           interface{} `json:"lang"`
 		SessionSetting int         `json:"session_setting"`
 	}
+
+	CustomValidator struct {
+		validator *validator.Validate
+	}
 )
 
 func New(cfg *config.Config) *echo.Echo {
 	e := echo.New()
+	validation := validator.New()
 
 	// setup server
 	e.HideBanner = true
 	e.Server.ReadTimeout = 30 * time.Second
 	e.Server.WriteTimeout = 30 * time.Second
 	e.HTTPErrorHandler = httpError
+	e.Validator = &CustomValidator{validator: validation}
 
 	// setup middleware
 	e.Pre(middleware.RemoveTrailingSlash())
@@ -51,9 +58,16 @@ func New(cfg *config.Config) *echo.Echo {
 	e.Use(jwt(cfg.JWTSecret))
 
 	// setup router
-	e = router(e)
+	e = router(e, validation)
 
 	return e
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	if err := cv.validator.Struct(i); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+	return nil
 }
 
 func httpError(e error, c echo.Context) {
