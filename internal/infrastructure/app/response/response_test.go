@@ -1,15 +1,15 @@
-package app_test
+package response_test
 
 import (
 	"testing"
 
-	"github.com/shandysiswandi/echo-service/internal/infrastructure/app"
+	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/response"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSuccess(t *testing.T) {
-	act := app.Success("message", nil)
-	ref := act.(app.SuccessBody)
+	act := response.Success("message", nil)
+	ref := act.(response.SuccessBody)
 
 	assert.Equal(t, false, ref.Error)
 	assert.Equal(t, "message", ref.Message)
@@ -18,7 +18,7 @@ func TestSuccess(t *testing.T) {
 
 func TestSuccessForTest(t *testing.T) {
 	body := `{"error":false,"message":"message","data":null}`
-	act, err := app.SuccessForTest(body)
+	act, err := response.SuccessForTest(body)
 
 	assert.NoError(t, err)
 	assert.Equal(t, false, act.Error)
@@ -26,7 +26,7 @@ func TestSuccessForTest(t *testing.T) {
 	assert.Equal(t, nil, act.Data)
 
 	body = "error"
-	act, err = app.SuccessForTest(body)
+	act, err = response.SuccessForTest(body)
 	assert.Error(t, err)
 	assert.Empty(t, act)
 }
