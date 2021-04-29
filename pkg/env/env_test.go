@@ -8,6 +8,6 @@ import (
 )
 
 func Test_Load(t *testing.T) {
-	err := env.Load("../../.env.testing")
+	err := env.Load(".env.testing")
 	assert.NoError(t, err)
 }

@@ -1,9 +1,19 @@
 package env
 
-import "github.com/joho/godotenv"
+import (
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 func Load(path string) error {
-	if err := godotenv.Load(path); err != nil {
+	dir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	dir = dir + "/../../"
+
+	if err := godotenv.Load(dir + path); err != nil {
 		return err
 	}
 	return nil
