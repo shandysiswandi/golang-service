@@ -9,22 +9,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/shandysiswandi/echo-service/internal/config"
+	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/response"
 	"github.com/shandysiswandi/echo-service/internal/util/is"
 )
 
 type (
-	SuccessBody struct {
-		Error   bool        `json:"error"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data"`
-	}
-
-	ErrorBody struct {
-		Error   bool        `json:"error"`
-		Message string      `json:"message"`
-		Reason  interface{} `json:"reason"`
-	}
-
 	UserJWT struct {
 		ID            int    `json:"id"`
 		Email         string `json:"email"`
@@ -86,7 +75,7 @@ func httpError(e error, c echo.Context) {
 		}
 	}
 
-	c.JSON(code, ErrorBody{
+	c.JSON(code, response.ErrorBody{
 		Error:   true,
 		Message: http.StatusText(code),
 		Reason:  reason,
