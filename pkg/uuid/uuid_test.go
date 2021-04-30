@@ -8,10 +8,8 @@ import (
 )
 
 func Test_New_And_Generate(t *testing.T) {
-	act := uuid.New()
-	assert.NotNil(t, act)
+	gen := uuid.Generate()
 
-	gen := act.Generate()
 	assert.NotEqual(t, "", gen)
 	assert.Equal(t, 36, len(gen))
 }
