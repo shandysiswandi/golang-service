@@ -16,6 +16,6 @@ func (h *handler) Health(c echo.Context) error {
 }
 
 func (h *handler) Graceful(c echo.Context) error {
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	return c.String(http.StatusOK, "OK")
 }
