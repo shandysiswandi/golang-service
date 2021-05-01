@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_New(t *testing.T) {
+func TestNew(t *testing.T) {
 	// setup data
 	host := "localhost"
 	port := "3000"

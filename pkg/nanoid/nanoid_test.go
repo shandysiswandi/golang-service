@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Generate(t *testing.T) {
+func TestGenerate(t *testing.T) {
 	id, err := nanoid.Generate()
 	assert.NoError(t, err)
 

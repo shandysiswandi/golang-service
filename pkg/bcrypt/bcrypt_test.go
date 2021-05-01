@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_HashPassword_And_CheckPasswordHash(t *testing.T) {
+func TestHashPasswordAndCheckPasswordHash(t *testing.T) {
 	tc := []struct {
 		name     string
 		password string

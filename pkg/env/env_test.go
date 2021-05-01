@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Load(t *testing.T) {
+func TestLoad(t *testing.T) {
 	err := env.Load(".env.testing")
 	assert.NoError(t, err)
 }

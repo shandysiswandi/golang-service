@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_New_And_Generate(t *testing.T) {
+func TestNewAndGenerate(t *testing.T) {
 	gen := uuid.Generate()
 
 	assert.NotEqual(t, "", gen)
