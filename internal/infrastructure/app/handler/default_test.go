@@ -2,25 +2,17 @@ package handler_test
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
-	"github.com/shandysiswandi/echo-service/internal/config"
-	"github.com/shandysiswandi/echo-service/internal/infrastructure/app"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
-	"github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb"
+	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/tester"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHome(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-
 	// setup
-	cfg := config.New()
-	dbm := mongodb.New(cfg)
-	e := app.New(cfg, dbm)
-	c := e.NewContext(req, rec)
+	testy := tester.New()
+	c, rec := testy.RequestWithContext(http.MethodGet, "/", nil, nil)
 
 	// testing
 	hc := handler.HandlerConfig{}
@@ -33,14 +25,9 @@ func TestHome(t *testing.T) {
 }
 
 func TestHealth(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/health", nil)
-	rec := httptest.NewRecorder()
-
 	// setup
-	cfg := config.New()
-	dbm := mongodb.New(cfg)
-	e := app.New(cfg, dbm)
-	c := e.NewContext(req, rec)
+	testy := tester.New()
+	c, rec := testy.RequestWithContext(http.MethodGet, "/health", nil, nil)
 
 	// testing
 	hc := handler.HandlerConfig{}
@@ -53,14 +40,9 @@ func TestHealth(t *testing.T) {
 }
 
 func TestGraceful(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/graceful", nil)
-	rec := httptest.NewRecorder()
-
 	// setup
-	cfg := config.New()
-	dbm := mongodb.New(cfg)
-	e := app.New(cfg, dbm)
-	c := e.NewContext(req, rec)
+	testy := tester.New()
+	c, rec := testy.RequestWithContext(http.MethodGet, "/graceful", nil, nil)
 
 	// testing
 	hc := handler.HandlerConfig{}
