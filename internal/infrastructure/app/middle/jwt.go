@@ -6,7 +6,7 @@ import (
 	jwtlib "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/shandysiswandi/echo-service/internal/util/is"
+	"github.com/shandysiswandi/echo-service/pkg/is"
 )
 
 type (
