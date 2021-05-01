@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/shandysiswandi/echo-service/internal/config"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/tester"
 	"github.com/stretchr/testify/assert"
@@ -52,4 +53,23 @@ func TestGraceful(t *testing.T) {
 	assert.NoError(t, h.Graceful(c))
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Equal(t, "OK", rec.Body.String())
+}
+
+func TestJWT(t *testing.T) {
+	// setup
+	testy := tester.New()
+	c, rec := testy.RequestWithContext(http.MethodGet, "/jwt", nil, nil)
+	cfg := config.New()
+
+	// testing
+	h := handler.New(handler.HandlerConfig{
+		Config:      cfg,
+		Validator:   nil,
+		TodoUsecase: nil,
+	})
+
+	// Assertions
+	assert.NoError(t, h.JWT(c))
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.NotEqual(t, "", rec.Body.String())
 }

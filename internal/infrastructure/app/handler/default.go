@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/middle"
 )
 
 func (h *handler) Home(c echo.Context) error {
@@ -18,4 +19,9 @@ func (h *handler) Health(c echo.Context) error {
 func (h *handler) Graceful(c echo.Context) error {
 	time.Sleep(1 * time.Second)
 	return c.String(http.StatusOK, "OK")
+}
+
+func (h *handler) JWT(c echo.Context) error {
+	accToken, _ := middle.CreateJWTToken("secret")
+	return c.String(http.StatusOK, accToken)
 }
