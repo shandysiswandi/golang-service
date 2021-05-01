@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/shandysiswandi/echo-service/internal/port"
+	"github.com/shandysiswandi/echo-service/pkg/validation"
 )
 
 /* Example get user jwt
@@ -12,13 +12,13 @@ data := user.Claims.(*JWTClaim)
 
 type (
 	handler struct {
-		validate *validator.Validate
+		validate *validation.Validation
 		tdu      port.TodoUsecase
 	}
 
 	HandlerConfig struct {
+		Validator   *validation.Validation
 		TodoUsecase port.TodoUsecase
-		Validator   *validator.Validate
 	}
 )
 
