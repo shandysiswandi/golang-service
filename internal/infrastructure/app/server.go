@@ -61,7 +61,7 @@ func New(cfg *config.Config, dbm *mongodb.MongoDB) *echo.Echo {
 	e.GET("/health", h.Health)
 
 	e.GET("/todos", h.FetchTodos)
-	e.GET("/todos/:id", h.GetTodoByID)
+	e.GET("/todos/:id", h.GetTodoById)
 	e.POST("/todos", h.CreateTodo)
 	e.PATCH("/todos/:id", h.UpdateTodoById)
 	e.PUT("/todos/:id", h.ReplaceTodoById)
