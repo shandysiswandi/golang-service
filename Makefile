@@ -30,6 +30,10 @@ cover: clear
 code-check: clear
 	@staticcheck ./...
 
+mock:
+	@rm -rf mocks/*.go
+	@mockery --dir=internal/port --all
+
 # gRPC
 gen-proto: clear
 	@protoc --go_out=. --go-grpc_out=. api/protobuf/**
