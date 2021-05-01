@@ -39,36 +39,6 @@ func TestHTTPErrorNotFound(t *testing.T) {
 	assert.Equal(t, "{\"error\":true,\"message\":\"Not Found\",\"reason\":[]}\n", body)
 }
 
-func TestHTTPErrorUnauthorized(t *testing.T) {
-	// setup
-	cfg := config.New()
-	dbm := mongodb.New(cfg)
-	e := app.New(cfg, dbm)
-
-	// testing
-	headers := map[string]string{"Authorization": "Bearer fake-jwt"}
-	code, body := tester.RequestWithHeadersTest(e, http.MethodGet, "/jwt", headers, nil)
-
-	// assertion
-	assert.Equal(t, http.StatusUnauthorized, code)
-	assert.Equal(t, "{\"error\":true,\"message\":\"Unauthorized\",\"reason\":[\"token invalid or expired\"]}\n", body)
-}
-
-func TestHTTPErrorBadRequest(t *testing.T) {
-	// setup
-	cfg := config.New()
-	dbm := mongodb.New(cfg)
-	e := app.New(cfg, dbm)
-
-	// testing
-	headers := map[string]string{"Authorization": "Bearer "}
-	code, body := tester.RequestWithHeadersTest(e, http.MethodGet, "/jwt", headers, nil)
-
-	// assertion
-	assert.Equal(t, http.StatusBadRequest, code)
-	assert.Equal(t, "{\"error\":true,\"message\":\"Bad Request\",\"reason\":[\"token not provide\"]}\n", body)
-}
-
 // func TestHTTPErrorInternalServerError(t *testing.T) {
 // 	req := httptest.NewRequest(http.MethodGet, "/panic", nil)
 // 	rec := httptest.NewRecorder()

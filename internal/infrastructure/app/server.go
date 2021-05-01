@@ -38,7 +38,8 @@ func New(cfg *config.Config, dbm *mongodb.MongoDB) *echo.Echo {
 	e.Use(middleware.Decompress())
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 9}))
 	e.Use(middle.CORS())
-	e.Use(middle.JWT(cfg.JWTSecret))
+	whiteList := []string{"/", "/xxx"}
+	e.Use(middle.JWT(cfg.JWTSecret, whiteList...))
 
 	/* ***** ***** ***** ***** ***** */
 	/* setup router
