@@ -1,6 +1,8 @@
 package middle
 
 import (
+	"time"
+
 	jwtlib "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -34,4 +36,32 @@ func JWT(key string, wl ...string) echo.MiddlewareFunc {
 		},
 	}
 	return middleware.JWTWithConfig(jwtCfg)
+}
+
+func CreateJWTToken(key string) (string, error) {
+	// Set custom claims
+	claims := &JWTClaim{
+		SessID: time.Now().Nanosecond(),
+		User: UserJWT{
+			ID:            1,
+			Email:         "",
+			CompanyID:     1,
+			UserCompanyID: 1,
+		},
+		Lang:           nil,
+		SessionSetting: 1,
+		StandardClaims: jwtlib.StandardClaims{
+			Audience:  "audien",
+			ExpiresAt: time.Now().Add(30 * 24 * time.Hour).Unix(),
+			Id:        "id",
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "issuer",
+			NotBefore: 0,
+			Subject:   "subject",
+		},
+	}
+
+	// Create token with claims
+	token := jwtlib.NewWithClaims(jwtlib.SigningMethodHS256, claims)
+	return token.SignedString([]byte(key))
 }

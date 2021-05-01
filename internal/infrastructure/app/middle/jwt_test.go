@@ -25,5 +25,10 @@ func TestJWT(t *testing.T) {
 
 	// assertion
 	assert.Equal(t, 200, rec.Code)
-	// assert.Equal(t, "logger", rec.Body.String())
+}
+
+func TestCreateJWTToken(t *testing.T) {
+	tok, err := middle.CreateJWTToken("")
+	assert.NoError(t, err)
+	assert.NotEqual(t, "", tok)
 }
