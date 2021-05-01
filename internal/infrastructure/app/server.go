@@ -38,7 +38,7 @@ func New(cfg *config.Config, dbm *mongodb.MongoDB) *echo.Echo {
 	e.Use(middleware.Decompress())
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 9}))
 	e.Use(middle.CORS())
-	whiteList := []string{"/", "/xxx"}
+	whiteList := []string{"/", "/xxx", "/health", "/jwt", "/graceful"}
 	e.Use(middle.JWT(cfg.JWTSecret, whiteList...))
 
 	/* ***** ***** ***** ***** ***** */
@@ -59,6 +59,7 @@ func New(cfg *config.Config, dbm *mongodb.MongoDB) *echo.Echo {
 	e.GET("/", h.Home)
 	e.GET("/graceful", h.Graceful)
 	e.GET("/health", h.Health)
+	e.GET("/jwt", h.JWT)
 
 	e.GET("/todos", h.FetchTodos)
 	e.GET("/todos/:id", h.GetTodoById)
