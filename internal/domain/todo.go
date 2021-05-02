@@ -9,32 +9,34 @@ var (
 	ErrTodoNotFound = errors.New("todo not found")
 )
 
-type Todo struct {
-	ID          string    `json:"id" bson:"id"`
-	Title       string    `json:"title" bson:"title,omitempty"`
-	Description string    `json:"description" bson:"description,omitempty"`
-	Completed   bool      `json:"completed" bson:"completed,omitempty"`
-	Timestamp   time.Time `json:"timestamp" bson:"timestamp,omitempty"`
-}
+type (
+	Todo struct {
+		ID          string    `json:"id" bson:"id"`
+		Title       string    `json:"title" bson:"title,omitempty"`
+		Description string    `json:"description" bson:"description,omitempty"`
+		Completed   bool      `json:"completed" bson:"completed,omitempty"`
+		Timestamp   time.Time `json:"timestamp" bson:"timestamp,omitempty"`
+	}
 
-type TodoCreatePayload struct {
-	Title       string `json:"title" validate:"required"`
-	Description string `json:"description" validate:"required"`
-}
+	TodoCreatePayload struct {
+		Title       string `json:"title" validate:"required"`
+		Description string `json:"description" validate:"required"`
+	}
 
-type TodoUpdatePayload struct {
-	ID          string `json:"id"`
-	Title       string `json:"title" validate:"omitempty"`
-	Description string `json:"description" validate:"omitempty"`
-	Completed   bool   `json:"completed" validate:"omitempty"`
-}
+	TodoUpdatePayload struct {
+		ID          string `json:"id"`
+		Title       string `json:"title" validate:"omitempty,min=5"`
+		Description string `json:"description" validate:"omitempty,min=15"`
+		Completed   bool   `json:"completed" validate:"omitempty"`
+	}
 
-type TodoReplacePayload struct {
-	ID          string `json:"id"`
-	Title       string `json:"title" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Completed   bool   `json:"completed" validate:"required"`
-}
+	TodoReplacePayload struct {
+		ID          string `json:"id"`
+		Title       string `json:"title" validate:"required,min=5"`
+		Description string `json:"description" validate:"required,min=15"`
+		Completed   bool   `json:"completed" validate:"boolean"`
+	}
+)
 
 func (Todo) TableName() string {
 	return "todos"
