@@ -8,9 +8,8 @@ import (
 )
 
 func TestGenerate(t *testing.T) {
-	id, err := nanoid.Generate()
-	assert.NoError(t, err)
+	id := nanoid.New().Generate()
 
 	assert.NotEqual(t, "", id)
-	assert.Equal(t, 21, len(id))
+	assert.Equal(t, 11, len(id))
 }
