@@ -34,7 +34,7 @@ type (
 		ID          string `json:"id"`
 		Title       string `json:"title" validate:"required,min=5"`
 		Description string `json:"description" validate:"required,min=15"`
-		Completed   bool   `json:"completed" validate:"boolean"`
+		Completed   bool   `json:"completed" validate:"omitempty"`
 	}
 )
 
