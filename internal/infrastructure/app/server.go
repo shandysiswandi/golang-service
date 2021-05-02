@@ -11,6 +11,7 @@ import (
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/middle"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb"
+	"github.com/shandysiswandi/echo-service/pkg/nanoid"
 	"github.com/shandysiswandi/echo-service/pkg/validation"
 )
 
@@ -44,11 +45,14 @@ func New(cfg *config.Config, dbm *mongodb.MongoDB) *echo.Echo {
 	/* ***** ***** ***** ***** ***** */
 	/* setup router
 	/* ***** ***** ***** ***** ***** */
+	// register all library
+	idgen := nanoid.New()
+
 	// register all repository
 	tdr := repository.NewTodoMongo(dbm.GetDB())
 
 	// register all usecase
-	tdu := usecase.NewTodoUsecase(tdr)
+	tdu := usecase.NewTodoUsecase(tdr, idgen)
 
 	// register handler
 	h := handler.New(handler.HandlerConfig{
