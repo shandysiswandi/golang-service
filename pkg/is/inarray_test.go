@@ -3,7 +3,7 @@ package is_test
 import (
 	"testing"
 
-	"github.com/shandysiswandi/echo-service/internal/util/is"
+	"github.com/shandysiswandi/echo-service/pkg/is"
 	"github.com/stretchr/testify/assert"
 )
 
