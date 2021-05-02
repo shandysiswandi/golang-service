@@ -10,11 +10,12 @@ import (
 )
 
 type todoUsecase struct {
-	todoRepo port.TodoRepository
+	todoRepo    port.TodoRepository
+	idGenerator nanoid.IDGenerator
 }
 
-func NewTodoUsecase(tdu port.TodoRepository) port.TodoUsecase {
-	return &todoUsecase{tdu}
+func NewTodoUsecase(tdu port.TodoRepository, idg nanoid.IDGenerator) port.TodoUsecase {
+	return &todoUsecase{tdu, idg}
 }
 
 func (tdu *todoUsecase) FetchTodos(ctx context.Context) ([]*domain.Todo, error) {
@@ -26,9 +27,8 @@ func (tdu *todoUsecase) GetTodoByID(ctx context.Context, id string) (*domain.Tod
 }
 
 func (tdu *todoUsecase) CreateTodo(ctx context.Context, payload domain.TodoCreatePayload) error {
-	id, _ := nanoid.Generate(11)
 	data := domain.Todo{
-		ID:          id,
+		ID:          tdu.idGenerator.Generate(),
 		Title:       payload.Title,
 		Description: payload.Description,
 		Completed:   false,
