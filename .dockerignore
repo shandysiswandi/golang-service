@@ -1,4 +1,5 @@
 # file
+.deepsource.toml
 .dockerignore
 .env.example
 .gitattributes
