@@ -2,20 +2,17 @@ package usecase
 
 import (
 	"context"
-	"time"
 
 	"github.com/shandysiswandi/echo-service/internal/domain"
-	"github.com/shandysiswandi/echo-service/internal/port"
-	"github.com/shandysiswandi/echo-service/pkg/nanoid"
+	"github.com/shandysiswandi/echo-service/internal/domain/port"
 )
 
 type todoUsecase struct {
-	todoRepo    port.TodoRepository
-	idGenerator nanoid.IDGenerator
+	todoRepo port.TodoRepository
 }
 
-func NewTodoUsecase(tdu port.TodoRepository, idg nanoid.IDGenerator) port.TodoUsecase {
-	return &todoUsecase{tdu, idg}
+func NewTodoUsecase(tdu port.TodoRepository) port.TodoUsecase {
+	return &todoUsecase{tdu}
 }
 
 func (tdu *todoUsecase) FetchTodos(ctx context.Context) ([]*domain.Todo, error) {
@@ -28,11 +25,11 @@ func (tdu *todoUsecase) GetTodoByID(ctx context.Context, id string) (*domain.Tod
 
 func (tdu *todoUsecase) CreateTodo(ctx context.Context, payload domain.TodoCreatePayload) error {
 	data := domain.Todo{
-		ID:          tdu.idGenerator.Generate(),
+		ID:          payload.ID,
 		Title:       payload.Title,
 		Description: payload.Description,
 		Completed:   false,
-		Timestamp:   time.Now(),
+		Timestamp:   payload.Timestamp,
 	}
 	return tdu.todoRepo.Create(ctx, data)
 }
