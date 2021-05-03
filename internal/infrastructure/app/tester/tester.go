@@ -11,9 +11,14 @@ import (
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb"
 )
 
+type Tester interface {
+	RequestWithServe(string, string, map[string]string, io.Reader) (int, string)
+	RequestWithContext(string, string, map[string]string, io.Reader) (echo.Context, *httptest.ResponseRecorder)
+}
+
 type tester struct{}
 
-func New() *tester {
+func New() Tester {
 	return &tester{}
 }
 
