@@ -19,8 +19,10 @@ type (
 	}
 
 	TodoCreatePayload struct {
-		Title       string `json:"title" validate:"required"`
-		Description string `json:"description" validate:"required"`
+		ID          string    `json:"id"`
+		Title       string    `json:"title" validate:"required"`
+		Description string    `json:"description" validate:"required"`
+		Timestamp   time.Time `json:"timestamp"`
 	}
 
 	TodoUpdatePayload struct {
