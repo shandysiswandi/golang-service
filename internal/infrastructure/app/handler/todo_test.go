@@ -1,36 +1,30 @@
 package handler_test
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/shandysiswandi/echo-service/internal/domain"
-	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/tester"
-	"github.com/shandysiswandi/echo-service/mocks"
-	"github.com/shandysiswandi/echo-service/pkg/validation"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestFetchTodos(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		// setup
-		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", nil, nil)
+		testy := tester.New()
+		c, rec := testy.RequestWithContext(http.MethodGet, "/todos", nil, nil)
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
-		tdu.On("FetchTodos", context.TODO()).Return([]*domain.Todo{}, nil)
-
-		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: tdu,
-		}).FetchTodos(c)
+		ret.TodoUsecase.On("FetchTodos", ctx).Return([]*domain.Todo{}, nil)
+		h := hen.FetchTodos(c)
 
 		// Assertions
 		assert.NoError(t, h)
@@ -38,111 +32,107 @@ func TestFetchTodos(t *testing.T) {
 		assert.Equal(t, "[]\n", rec.Body.String())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Error", func(t *testing.T) {
 		// setup
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", nil, nil)
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", nil, nil)
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
-		tdu.On("FetchTodos", context.TODO()).Return(nil, errors.New("error"))
-
-		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: tdu,
-		}).FetchTodos(c)
+		ret.TodoUsecase.On("FetchTodos", ctx).Return(nil, errors.New("error"))
+		h := hen.FetchTodos(c)
 
 		// Assertions
 		assert.Equal(t, "code=500, message=Internal Server Error", h.Error())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 }
 
 func TestGetTodoById(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		// setup
-		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", nil, nil)
+		testy := tester.New()
+		c, rec := testy.RequestWithContext(http.MethodGet, "/todos", nil, nil)
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("xxx-xxx-xxx")
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		expected := domain.Todo{}
 		actual := domain.Todo{}
-		tdu.On("GetTodoByID", context.TODO(), "xxx-xxx-xxx").Return(&expected, nil)
+		ret.TodoUsecase.On("GetTodoByID", ctx, "xxx-xxx-xxx").Return(&expected, nil)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: tdu,
-		}).GetTodoById(c)
+		h := hen.GetTodoById(c)
 
 		// Assertions
 		json.Unmarshal([]byte(rec.Body.Bytes()), &actual)
 		assert.NoError(t, h)
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expected.ID, actual.ID)
-		assert.Equal(t, expected.Title, actual.Title)
-		assert.Equal(t, expected.Description, actual.Description)
-		assert.Equal(t, expected.Completed, actual.Completed)
-		assert.Equal(t, expected.Timestamp, actual.Timestamp)
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Error", func(t *testing.T) {
 		// setup
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", nil, nil)
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", nil, nil)
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("xxx-xxx-xxx")
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
-		tdu.On("GetTodoByID", context.TODO(), "xxx-xxx-xxx").Return(nil, errors.New("error"))
+		ret.TodoUsecase.On("GetTodoByID", ctx, "xxx-xxx-xxx").Return(nil, errors.New("error"))
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: tdu,
-		}).GetTodoById(c)
+		h := hen.GetTodoById(c)
 
 		// Assertions
 		assert.Equal(t, "code=500, message=Internal Server Error", h.Error())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 }
 
 func TestCreateTodo(t *testing.T) {
+	tm := time.Now()
+	id := "id123"
+	testy := tester.New()
+	hen, ret := testy.SetupHandlerTest()
+
 	t.Run("Success", func(t *testing.T) {
 		// setup
-		paybody := `{"title":"title of document todo","description":"description of document todo"}`
+		paybody := `{"title":"title","description":"description of document"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
-		v := validation.New()
+		c, rec := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoCreatePayload{
-			Title:       "title of document todo",
-			Description: "description of document todo",
+			ID:          id,
+			Title:       "title",
+			Description: "description of document",
+			Timestamp:   tm,
 		}
-		tdu.On("CreateTodo", context.TODO(), payload).Return(nil)
+		ret.TodoUsecase.On("CreateTodo", ctx, payload).Return(nil)
+		ret.Generator.On("Nanoid").Return(id)
+		ret.Clocker.On("Now").Return(tm)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).CreateTodo(c)
+		h := hen.CreateTodo(c)
 
 		// Assertions
 		assert.NoError(t, h)
@@ -150,45 +140,44 @@ func TestCreateTodo(t *testing.T) {
 		assert.Equal(t, "\"OK\"\n", rec.Body.String())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
+		ret.Generator.AssertExpectations(t)
+		ret.Clocker.AssertExpectations(t)
 	})
 
 	t.Run("Error_Mock", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"a","description":"b"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
-		v := validation.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
-		payload := domain.TodoCreatePayload{Title: "a", Description: "b"}
-		tdu.On("CreateTodo", context.TODO(), payload).Return(errors.New("errLogic"))
+		payload := domain.TodoCreatePayload{ID: id, Title: "a", Description: "b", Timestamp: tm}
+		ret.TodoUsecase.On("CreateTodo", ctx, payload).Return(errors.New("errLogic"))
+		ret.Generator.On("Nanoid").Return(id)
+		ret.Clocker.On("Now").Return(tm)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).CreateTodo(c)
+		h := hen.CreateTodo(c)
 
 		// Assertions
 		assert.Equal(t, "code=500, message=Internal Server Error", h.Error())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
+		ret.Generator.AssertExpectations(t)
+		ret.Clocker.AssertExpectations(t)
 	})
 
 	t.Run("Error_Bind", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"a","description":"b",}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: nil,
-		}).CreateTodo(c)
+		h := hen.CreateTodo(c)
 
 		// Assertions
 		assert.Equal(t, 206, len(h.Error()))
@@ -198,14 +187,10 @@ func TestCreateTodo(t *testing.T) {
 		// setup
 		paybody := `{"title":"","description":""}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
-		v := validation.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: nil,
-		}).CreateTodo(c)
+		h := hen.CreateTodo(c)
 
 		// Assertions
 		assert.Equal(t, 219, len(h.Error()))
@@ -217,27 +202,25 @@ func TestUpdateTodoById(t *testing.T) {
 		// setup
 		paybody := `{"title":"title of document todo","description":"description of document todo", "completed":true}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, rec := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
-		v := validation.New()
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoUpdatePayload{
 			ID:          "1",
 			Title:       "title of document todo",
 			Description: "description of document todo",
 			Completed:   true,
 		}
-		tdu.On("UpdateTodoByID", context.TODO(), payload).Return(nil)
+		ret.TodoUsecase.On("UpdateTodoByID", ctx, payload).Return(nil)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).UpdateTodoById(c)
+		h := hen.UpdateTodoById(c)
 
 		// Assertions
 		assert.NoError(t, h)
@@ -245,33 +228,31 @@ func TestUpdateTodoById(t *testing.T) {
 		assert.Equal(t, "\"OK\"\n", rec.Body.String())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Success_Two", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"title of document todo","description":"description of document todo"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, rec := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
-		v := validation.New()
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoUpdatePayload{
 			ID:          "1",
 			Title:       "title of document todo",
 			Description: "description of document todo",
 		}
-		tdu.On("UpdateTodoByID", context.TODO(), payload).Return(nil)
+		ret.TodoUsecase.On("UpdateTodoByID", ctx, payload).Return(nil)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).UpdateTodoById(c)
+		h := hen.UpdateTodoById(c)
 
 		// Assertions
 		assert.NoError(t, h)
@@ -279,32 +260,30 @@ func TestUpdateTodoById(t *testing.T) {
 		assert.Equal(t, "\"OK\"\n", rec.Body.String())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Success_Three", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"title of document todo"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, rec := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
-		v := validation.New()
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoUpdatePayload{
 			ID:    "1",
 			Title: "title of document todo",
 		}
-		tdu.On("UpdateTodoByID", context.TODO(), payload).Return(nil)
+		ret.TodoUsecase.On("UpdateTodoByID", ctx, payload).Return(nil)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).UpdateTodoById(c)
+		h := hen.UpdateTodoById(c)
 
 		// Assertions
 		assert.NoError(t, h)
@@ -312,48 +291,45 @@ func TestUpdateTodoById(t *testing.T) {
 		assert.Equal(t, "\"OK\"\n", rec.Body.String())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Error_Mock", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"12345","description":"12345 12345 12345"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
-		v := validation.New()
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoUpdatePayload{ID: "1", Title: "12345", Description: "12345 12345 12345"}
-		tdu.On("UpdateTodoByID", context.TODO(), payload).Return(errors.New("errLogic"))
+		ret.TodoUsecase.On("UpdateTodoByID", ctx, payload).Return(errors.New("errLogic"))
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).UpdateTodoById(c)
+		h := hen.UpdateTodoById(c)
 
 		// Assertions
 		assert.Equal(t, "code=500, message=Internal Server Error", h.Error())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Error_Bind", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"a","description":"b",}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		hen, _ := testy.SetupHandlerTest()
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: nil,
-		}).UpdateTodoById(c)
+		h := hen.UpdateTodoById(c)
 
 		// Assertions
 		assert.Equal(t, 206, len(h.Error()))
@@ -363,14 +339,12 @@ func TestUpdateTodoById(t *testing.T) {
 		// setup
 		paybody := `{"title":"a","description":"a"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
-		v := validation.New()
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		hen, _ := testy.SetupHandlerTest()
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: nil,
-		}).UpdateTodoById(c)
+		h := hen.UpdateTodoById(c)
 
 		// Assertions
 		assert.Equal(t, 209, len(h.Error()))
@@ -382,27 +356,25 @@ func TestReplaceTodoById(t *testing.T) {
 		// setup
 		paybody := `{"title":"title of document todo","description":"description of document todo", "completed":true}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
+		testy := tester.New()
 		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
-		v := validation.New()
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoReplacePayload{
 			ID:          "1",
 			Title:       "title of document todo",
 			Description: "description of document todo",
 			Completed:   true,
 		}
-		tdu.On("ReplaceTodoByID", context.TODO(), payload).Return(nil)
+		ret.TodoUsecase.On("ReplaceTodoByID", ctx, payload).Return(nil)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).ReplaceTodoById(c)
+		h := hen.ReplaceTodoById(c)
 
 		// Assertions
 		assert.NoError(t, h)
@@ -410,33 +382,31 @@ func TestReplaceTodoById(t *testing.T) {
 		assert.Equal(t, "\"OK\"\n", rec.Body.String())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Success_Two", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"title of document todo","description":"description of document todo"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, rec := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, rec := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
-		v := validation.New()
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoReplacePayload{
 			ID:          "1",
 			Title:       "title of document todo",
 			Description: "description of document todo",
 		}
-		tdu.On("ReplaceTodoByID", context.TODO(), payload).Return(nil)
+		ret.TodoUsecase.On("ReplaceTodoByID", ctx, payload).Return(nil)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).ReplaceTodoById(c)
+		h := hen.ReplaceTodoById(c)
 
 		// Assertions
 		assert.NoError(t, h)
@@ -444,48 +414,45 @@ func TestReplaceTodoById(t *testing.T) {
 		assert.Equal(t, "\"OK\"\n", rec.Body.String())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Error_Mock", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"12345","description":"12345 12345 12345"}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
-		v := validation.New()
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
 		payload := domain.TodoReplacePayload{ID: "1", Title: "12345", Description: "12345 12345 12345"}
-		tdu.On("ReplaceTodoByID", context.TODO(), payload).Return(errors.New("errLogic"))
+		ret.TodoUsecase.On("ReplaceTodoByID", ctx, payload).Return(errors.New("errLogic"))
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: tdu,
-		}).ReplaceTodoById(c)
+		h := hen.ReplaceTodoById(c)
 
 		// Assertions
 		assert.Equal(t, "code=500, message=Internal Server Error", h.Error())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Error_Bind", func(t *testing.T) {
 		// setup
 		paybody := `{"title":"a","description":"b",}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		hen, _ := testy.SetupHandlerTest()
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: nil,
-		}).ReplaceTodoById(c)
+		h := hen.ReplaceTodoById(c)
 
 		// Assertions
 		assert.Equal(t, 206, len(h.Error()))
@@ -495,14 +462,12 @@ func TestReplaceTodoById(t *testing.T) {
 		// setup
 		paybody := `{"title":"","description":""}`
 		header := map[string]string{echo.HeaderContentType: echo.MIMEApplicationJSON}
-		c, _ := tester.New().RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
-		v := validation.New()
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodGet, "/todos", header, strings.NewReader(paybody))
+		hen, _ := testy.SetupHandlerTest()
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   v,
-			TodoUsecase: nil,
-		}).ReplaceTodoById(c)
+		h := hen.ReplaceTodoById(c)
 
 		// Assertions
 		assert.Equal(t, 221, len(h.Error()))
@@ -512,50 +477,48 @@ func TestReplaceTodoById(t *testing.T) {
 func TestDeleteTodoById(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		// setup
-		c, rec := tester.New().RequestWithContext(http.MethodDelete, "/todos", nil, nil)
+		testy := tester.New()
+		c, rec := testy.RequestWithContext(http.MethodDelete, "/todos", nil, nil)
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("xxx-xxx-xxx")
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
-		tdu.On("DeleteTodoByID", context.TODO(), "xxx-xxx-xxx").Return(nil)
+		ret.TodoUsecase.On("DeleteTodoByID", ctx, "xxx-xxx-xxx").Return(nil)
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: tdu,
-		}).DeleteTodoById(c)
+		h := hen.DeleteTodoById(c)
 
 		// Assertions
 		assert.NoError(t, h)
 		assert.Equal(t, http.StatusOK, rec.Code)
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 
 	t.Run("Error", func(t *testing.T) {
 		// setup
-		c, _ := tester.New().RequestWithContext(http.MethodDelete, "/todos", nil, nil)
+		testy := tester.New()
+		c, _ := testy.RequestWithContext(http.MethodDelete, "/todos", nil, nil)
 		c.SetPath("/:id")
 		c.SetParamNames("id")
 		c.SetParamValues("xxx-xxx-xxx")
+		hen, ret := testy.SetupHandlerTest()
+		ctx := c.Request().Context()
 
 		// mocks
-		tdu := new(mocks.TodoUsecase)
-		tdu.On("DeleteTodoByID", context.TODO(), "xxx-xxx-xxx").Return(errors.New("error"))
+		ret.TodoUsecase.On("DeleteTodoByID", ctx, "xxx-xxx-xxx").Return(errors.New("error"))
 
 		// testing
-		h := handler.New(handler.HandlerConfig{
-			Validator:   nil,
-			TodoUsecase: tdu,
-		}).DeleteTodoById(c)
+		h := hen.DeleteTodoById(c)
 
 		// Assertions
 		assert.Equal(t, "code=500, message=Internal Server Error", h.Error())
 
 		// end mock
-		tdu.AssertExpectations(t)
+		ret.TodoUsecase.AssertExpectations(t)
 	})
 }
