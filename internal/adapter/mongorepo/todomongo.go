@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/shandysiswandi/echo-service/internal/domain"
-	"github.com/shandysiswandi/echo-service/internal/port"
+	"github.com/shandysiswandi/echo-service/internal/domain/port"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
