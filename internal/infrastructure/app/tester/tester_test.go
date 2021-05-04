@@ -26,3 +26,12 @@ func TestRequestWithHeadersTest(t *testing.T) {
 	assert.Equal(t, 200, rec.Code)
 	assert.Equal(t, "", rec.Body.String())
 }
+
+func TestSetupHandlerTest(t *testing.T) {
+	// testing
+	h, ret := tester.New().SetupHandlerTest()
+
+	// assertion
+	assert.NotNil(t, h)
+	assert.NotNil(t, ret)
+}
