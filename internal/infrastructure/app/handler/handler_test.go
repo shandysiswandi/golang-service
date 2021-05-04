@@ -8,7 +8,6 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	hc := handler.HandlerConfig{}
-	h := handler.New(hc)
+	h := handler.New(handler.HandlerConfig{})
 	assert.NotNil(t, h)
 }
