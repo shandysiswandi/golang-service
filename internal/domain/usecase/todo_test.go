@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shandysiswandi/echo-service/internal/adapter/usecase"
 	"github.com/shandysiswandi/echo-service/internal/domain"
 	"github.com/shandysiswandi/echo-service/internal/domain/port"
+	"github.com/shandysiswandi/echo-service/internal/domain/usecase"
 	"github.com/shandysiswandi/echo-service/mocks"
 	"github.com/stretchr/testify/assert"
 )
