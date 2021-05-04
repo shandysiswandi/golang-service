@@ -7,7 +7,7 @@ import (
 	"github.com/shandysiswandi/echo-service/internal/domain"
 )
 
-func (h *handler) FetchTodos(c echo.Context) error {
+func (h *Handler) FetchTodos(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	data, err := h.tdu.FetchTodos(ctx)
@@ -18,7 +18,7 @@ func (h *handler) FetchTodos(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 }
 
-func (h *handler) GetTodoById(c echo.Context) error {
+func (h *Handler) GetTodoById(c echo.Context) error {
 	ctx := c.Request().Context()
 	id := c.Param("id")
 
@@ -30,7 +30,7 @@ func (h *handler) GetTodoById(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 }
 
-func (h *handler) CreateTodo(c echo.Context) error {
+func (h *Handler) CreateTodo(c echo.Context) error {
 	ctx := c.Request().Context()
 	payload := domain.TodoCreatePayload{}
 
@@ -45,6 +45,8 @@ func (h *handler) CreateTodo(c echo.Context) error {
 	}
 
 	// call usecase or business logic
+	payload.ID = h.generator.Nanoid()
+	payload.Timestamp = h.clock.Now()
 	if err := h.tdu.CreateTodo(ctx, payload); err != nil {
 		return echo.ErrInternalServerError
 	}
@@ -52,7 +54,7 @@ func (h *handler) CreateTodo(c echo.Context) error {
 	return c.JSON(http.StatusOK, "OK")
 }
 
-func (h *handler) UpdateTodoById(c echo.Context) error {
+func (h *Handler) UpdateTodoById(c echo.Context) error {
 	ctx := c.Request().Context()
 	payload := domain.TodoUpdatePayload{ID: c.Param("id")}
 
@@ -74,7 +76,7 @@ func (h *handler) UpdateTodoById(c echo.Context) error {
 	return c.JSON(http.StatusOK, "OK")
 }
 
-func (h *handler) ReplaceTodoById(c echo.Context) error {
+func (h *Handler) ReplaceTodoById(c echo.Context) error {
 	ctx := c.Request().Context()
 	payload := domain.TodoReplacePayload{ID: c.Param("id")}
 
@@ -96,7 +98,7 @@ func (h *handler) ReplaceTodoById(c echo.Context) error {
 	return c.JSON(http.StatusOK, "OK")
 }
 
-func (h *handler) DeleteTodoById(c echo.Context) error {
+func (h *Handler) DeleteTodoById(c echo.Context) error {
 	ctx := c.Request().Context()
 	id := c.Param("id")
 
