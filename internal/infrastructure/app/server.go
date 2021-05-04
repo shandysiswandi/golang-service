@@ -5,9 +5,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/shandysiswandi/echo-service/internal/adapter/repository"
-	"github.com/shandysiswandi/echo-service/internal/adapter/usecase"
+	repository "github.com/shandysiswandi/echo-service/internal/adapter/mongorepo"
 	"github.com/shandysiswandi/echo-service/internal/config"
+	"github.com/shandysiswandi/echo-service/internal/domain/usecase"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/handler"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/app/middle"
 	"github.com/shandysiswandi/echo-service/internal/infrastructure/mongodb"
